@@ -74,7 +74,10 @@ class PolygonPainter {
         paint.style = PaintingStyle.stroke;
       }
 
-      if (fillColor != null) {
+      // TODO make configurable
+      var fillGradient = true;
+
+      if (fillColor != null && !fillGradient) {
         paint.color = fillColor;
         paint.style = PaintingStyle.fill;
       }
@@ -87,6 +90,20 @@ class PolygonPainter {
       }
 
       canvas.drawPath(path, paint);
+
+      if (fillGradient) {
+        var gradient = new LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              new Color.fromARGB(255, fill.r, fill.g, fill.b),
+              new Color.fromARGB(0, 255, 255, 255)
+            ]);
+        paint.shader = gradient.createShader(path.getBounds());
+        paint.style = PaintingStyle.fill;
+        canvas.drawPath(path, paint);
+        paint.shader = null;
+      }
     }
 
     if (clipBounds != null) {
