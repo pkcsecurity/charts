@@ -141,4 +141,5 @@ Color getAnimatedColor(Color previous, Color target, double animationPercent) {
 ///   on top of a bar filled with the fill color.
 /// * [solid] defines a simple bar filled with the fill color. This is the
 ///   default pattern for bars.
-enum FillPatternType { forwardHatch, solid }
+// TODO document, figure out vertical/horizontal
+enum FillPatternType { forwardHatch, solid, gradient }

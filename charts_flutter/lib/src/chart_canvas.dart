@@ -148,7 +148,9 @@ class ChartCanvas implements common.ChartCanvas {
       case common.FillPatternType.forwardHatch:
         _drawForwardHatchPattern(myBounds, canvas, fill: fill);
         break;
-
+      case common.FillPatternType.gradient:
+        _drawGradientPattern(myBounds, canvas, fill: fill);
+        break;
       case common.FillPatternType.solid:
       default:
         // Use separate rect for drawing stroke
@@ -381,6 +383,27 @@ class ChartCanvas implements common.ChartCanvas {
           stroke: fill,
           strokeWidthPx: fillWidthPx);
     }
+  }
+
+  _drawGradientPattern(
+      Rectangle<num> bounds,
+      Canvas canvas, {
+        common.Color background,
+        common.Color fill,
+      }) {
+    background ??= common.StyleFactory.style.white;
+    fill ??= common.StyleFactory.style.black;
+    // TODO clean this up
+    _paint.style = PaintingStyle.fill;
+    var gradient = new LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          new Color.fromARGB(fill.a, fill.r, fill.g, fill.b),
+          new Color.fromARGB(0, background.r, background.g, background.b)
+        ]);
+    _paint.shader = gradient.createShader(_getRect(bounds));
+    canvas.drawRect(_getRect(bounds), _paint);
   }
 
   @override
