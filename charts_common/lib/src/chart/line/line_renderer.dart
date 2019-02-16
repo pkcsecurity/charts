@@ -112,6 +112,7 @@ class LineRenderer<D> extends BaseCartesianRenderer<D> {
 
     seriesList.forEach((MutableSeries<D> series) {
       final colorFn = series.colorFn;
+      final fillColorFn = series.fillColorFn;
       final domainFn = series.domainFn;
       final measureFn = series.measureFn;
       final strokeWidthPxFn = series.strokeWidthPxFn;
@@ -137,6 +138,7 @@ class LineRenderer<D> extends BaseCartesianRenderer<D> {
         }
 
         final color = colorFn(index);
+        final fillColor = fillColorFn(index);
         final dashPattern = dashPatternFn(index);
         final strokeWidthPx = strokeWidthPxFn != null
             ? strokeWidthPxFn(index).toDouble()
@@ -149,7 +151,7 @@ class LineRenderer<D> extends BaseCartesianRenderer<D> {
         // can't see any difference in the canvas anyways.
         final strokeWidthPxRounded = (strokeWidthPx * 100).round() / 100;
         var styleKey = '${series.id}__${styleSegmentsIndex}__${color}' +
-            '__${dashPattern}__${strokeWidthPxRounded}';
+            '__${fillColor}__${dashPattern}__${strokeWidthPxRounded}';
 
         if (styleKey != previousSegmentKey) {
           // If we have a repeated style segment, update the repeat index and
@@ -172,6 +174,7 @@ class LineRenderer<D> extends BaseCartesianRenderer<D> {
           // Create a new style segment.
           currentDetails = new _LineRendererElement<D>()
             ..color = color
+            ..fillColor = fillColor
             ..dashPattern = dashPattern
             ..domainExtent = new _Range<D>(domain, domain)
             ..strokeWidthPx = strokeWidthPx
@@ -555,6 +558,7 @@ class LineRenderer<D> extends BaseCartesianRenderer<D> {
     final measureAxis = series.getAttr(measureAxisKey) as ImmutableAxis<num>;
 
     final color = styleSegment.color;
+    final fillColor = styleSegment.fillColor;
     final dashPattern = styleSegment.dashPattern;
     final domainExtent = styleSegment.domainExtent;
     final strokeWidthPx = styleSegment.strokeWidthPx;
@@ -606,6 +610,11 @@ class LineRenderer<D> extends BaseCartesianRenderer<D> {
           g: color.g,
           b: color.b,
           a: (color.a * config.areaOpacity).round());
+      Color areaFillColor = new Color(
+          r: fillColor.r,
+          g: fillColor.g,
+          b: fillColor.b,
+          a: (fillColor.a * config.areaOpacity).round());
 
       for (var index = 0; index < areaSegments.length; index++) {
         final areaPointList = areaSegments[index];
@@ -617,6 +626,7 @@ class LineRenderer<D> extends BaseCartesianRenderer<D> {
         areaElements.add(new _AreaRendererElement<D>()
           ..points = areaPointList
           ..color = areaColor
+          ..fillColor = areaFillColor
           ..domainExtent = domainExtent
           ..measureAxisPosition = measureAxis.getLocation(0.0)
           ..positionExtent = positionExtent
@@ -939,7 +949,8 @@ class LineRenderer<D> extends BaseCartesianRenderer<D> {
           if (area != null) {
             canvas.drawPolygon(
                 clipBounds: _getClipBoundsForExtent(area.positionExtent),
-                fill: area.color,
+                stroke: area.color,
+                fill: area.fillColor,
                 points: area.points);
           }
         });
@@ -1160,6 +1171,7 @@ class _DatumPoint<D> extends Point<double> {
 class _LineRendererElement<D> {
   List<_DatumPoint<D>> points;
   Color color;
+  Color fillColor;
   List<int> dashPattern;
   _Range<D> domainExtent;
   double measureAxisPosition;
@@ -1172,6 +1184,7 @@ class _LineRendererElement<D> {
     return new _LineRendererElement<D>()
       ..points = new List<_DatumPoint<D>>.from(points)
       ..color = color != null ? new Color.fromOther(color: color) : null
+      ..fillColor = fillColor != null ? new Color.fromOther(color: fillColor) : null
       ..dashPattern =
           dashPattern != null ? new List<int>.from(dashPattern) : null
       ..domainExtent = domainExtent
@@ -1308,6 +1321,7 @@ class _AnimatedLine<D> {
 class _AreaRendererElement<D> {
   List<_DatumPoint<D>> points;
   Color color;
+  Color fillColor;
   _Range<D> domainExtent;
   double measureAxisPosition;
   _Range<num> positionExtent;
