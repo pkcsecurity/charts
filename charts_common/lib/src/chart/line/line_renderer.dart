@@ -951,7 +951,9 @@ class LineRenderer<D> extends BaseCartesianRenderer<D> {
                 clipBounds: _getClipBoundsForExtent(area.positionExtent),
                 stroke: area.color,
                 fill: area.fillColor,
-                points: area.points);
+                points: area.points,
+                smoothLine: config.smoothLine
+            );
           }
         });
       }
@@ -990,6 +992,7 @@ class LineRenderer<D> extends BaseCartesianRenderer<D> {
                 points: line.points,
                 stroke: line.color,
                 strokeWidthPx: line.strokeWidthPx,
+                smoothLine: config.smoothLine,
                 roundEndCaps: line.roundEndCaps);
           }
         });
