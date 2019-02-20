@@ -404,7 +404,7 @@ class ChartCanvas implements common.ChartCanvas {
         end: Alignment.bottomCenter,
         colors: [
           new Color.fromARGB(fill.a, fill.r, fill.g, fill.b),
-          new Color.fromARGB(0, background.r, background.g, background.b)
+          new Color.fromARGB(25, fill.r, fill.g, fill.b)
         ]);
     _paint.shader = gradient.createShader(_getRect(bounds));
     canvas.drawRect(_getRect(bounds), _paint);
